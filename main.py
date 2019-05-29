@@ -90,7 +90,7 @@ def find_seq_max(p, length, dx, dy):
 
 # sum length of sequences
 def eval_score(p):
-    return sum(map(lambda x: len(x), find_seq(p)))    
+    return sum(map(lambda x: len(x) ** 3, find_seq(p)))    
 
 def is_win(p):
     return find_seq_max(p, 4, 1, 0) or \
@@ -127,7 +127,7 @@ def stockfish(max_depth, depth, p):
     if depth == max_depth:
         return scores
 
-    return max(scores) / 2
+    return sum(scores) / (2 * len(scores))
 
 
 def move_stockfish():
@@ -155,10 +155,10 @@ def move_random():
 strat = move_stockfish
 
 # main loop
-while(True):
+while True:
 
     # opponent play
-    move = int(input())
+    move = move_random()
 
     if move >= 0:
         play(move, 2)
