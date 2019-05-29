@@ -58,7 +58,7 @@ def find_seq_aux(p, dx, dy):
             if k > 0:
                 seqs.append(s)
     return seqs
-    
+
 def find_seq(p):
     seqs = find_seq_aux(p, 1, 0)        # horiziontals
     seqs.extend(find_seq_aux(p, 0, 1))  # verticals
@@ -67,18 +67,41 @@ def find_seq(p):
     seqs.sort(key=lambda x: len(x))
     return seqs
 
-# STRATS
+def find_seq_max(p, length, dx, dy):
+    for i in range(base, base + L):
+        for j in range(C):
+            s = []
+            for k in range(4):
+                x = j + k * dx
+                y = i + k * dy
+                if (x < base + L and x >= base
+                    and y < base + 7 and y >= base
+                    and board[y][x] == p):
+                    s.append((x, y))
+                else:
+                    break
+            if len(s) >= 4:
+                return True
+    return False
 
 # sum length of sequences
 def eval_score(p):
-    return sum(map(lambda x: len(x), find_seq(p)))
+    return sum(map(lambda x: len(x), find_seq(p)))    
 
+def is_win(p):
+    return find_seq_max(p, 4, 1, 0) or \
+    find_seq_max(p, 4, 0, 1)  or \
+    find_seq_max(p, 4, 1, 1)  or \
+    find_seq_max(p, 4, -1, 1)  # anti
+
+# STRATS
+# 1  me
 # -1 opp
 def stockfish(depth, p):
     global base
     s = eval_score(depth % 2 + 1)
     scores = [s] * 7
-    
+
     if depth == 0:
         return s
 
@@ -88,8 +111,10 @@ def stockfish(depth, p):
         
         i = play(c, 1 if p == 1 else 2)
         cleaned = clean()
-        # test is win
-        scores[c] = stockfish(depth - 1, p * (-1))
+        if is_win(depth % 2 + 1):
+            scores[c] = 1000 * p
+        else:
+            scores[c] = stockfish(depth - 1, p * (-1))
         board[i][c] = 0
         if cleaned:
             base -= 1
@@ -126,15 +151,21 @@ while(True):
 
     if move >= 0:
         play(move, 2)
+        if is_win(2):
+            print("Perdu")
+            break
         clean()
 
     pboard()
 
     #print("seq player 2")
-    #print(find_seq(2))
-        
+    # print(find_seq(2))
+
     # we play
     move = strat()
+    if is_win(1):
+        print("Gagne")
+        break
     print(play(move, 1))
     clean()
 
