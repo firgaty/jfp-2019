@@ -1,5 +1,18 @@
+import random
+
 # top line is 0
 board = [[0] * 7 for _ in range(7)]
+
+def is_tetris():
+    for e in board[6]:
+        if e == 0:
+            return False
+    return True
+
+def clean():
+    if is_tetris():
+        board.pop()
+        board.insert(0, [0] * 7)
 
 # 0 == nothing
 # otherwise == player
@@ -29,7 +42,7 @@ def find_seq_aux(p, dx, dy):
     return seqs
     
 def find_seq(p):
-    seqs = find_seq_aux(p, 1, 0)         # horiziontals
+    seqs = find_seq_aux(p, 1, 0)        # horiziontals
     seqs.extend(find_seq_aux(p, 0, 1))  # verticals
     seqs.extend(find_seq_aux(p, 1, 1))  # diags
     seqs.extend(find_seq_aux(p, -1, 1)) # anti diags
@@ -37,14 +50,14 @@ def find_seq(p):
     return seqs
 
 def cp_move():
-    return 0
+    return random.randint(0, 6)
 
 def pboard():
     for i in range(7):
         for j in range(7):
             print(board[i][j], end=' ')
         print()
-        
+
 
 while(True):
 
@@ -53,6 +66,7 @@ while(True):
 
     if move >= 0:
         play(move, 2)
+        clean()
 
     pboard()
 
@@ -62,6 +76,7 @@ while(True):
     # we play
     move = cp_move()
     play(move, 1)
-    
+    clean()
+
     print(move)
     pboard()
