@@ -31,7 +31,9 @@ def clean():
 # 0 == nothing
 # otherwise == player
 def play(c, p):
+    #print("base", base)
     for i in range(L):
+        #print(base + L - i - 1)
         if board[base + L - i - 1][c] != 0:
             assert (i != 0)
             board[base + L - i][c] = p
@@ -49,7 +51,7 @@ def find_seq_aux(p, dx, dy):
             for k in range(4):
                 x = j + k * dx
                 y = i + k * dy
-                if (x < base + 7 and x >= base
+                if (x > 0 and x < C
                     and y < base + 7 and y >= base
                     and board[y][x] == p):
                     s.append((x, y))
@@ -74,8 +76,8 @@ def find_seq_max(p, length, dx, dy):
             for k in range(4):
                 x = j + k * dx
                 y = i + k * dy
-                if (x < base + L and x >= base
-                    and y < base + 7 and y >= base
+                if (x < C and x >= 0
+                    and y < base + L and y >= base
                     and board[y][x] == p):
                     s.append((x, y))
                 else:
@@ -97,7 +99,7 @@ def is_win(p):
 # STRATS
 # 1  me
 # -1 opp
-def stockfish(depth, p):
+def stockfish(max_depth, depth, p):
     global base
     s = eval_score(depth % 2 + 1)
     scores = [s] * 7
@@ -107,24 +109,30 @@ def stockfish(depth, p):
 
     for c in range(7):
         if board[base + L - 1][c] != 0:
+            scores[c] = -1000000000
             continue
         
         i = play(c, 1 if p == 1 else 2)
         cleaned = clean()
         if is_win(depth % 2 + 1):
-            scores[c] = 1000 * p
+            scores[c] = 1000
         else:
-            scores[c] = stockfish(depth - 1, p * (-1))
+            scores[c] = stockfish(max_depth, depth - 1, p * (-1))
         board[i][c] = 0
         if cleaned:
             base -= 1
 
-    if depth == 3:
+    if depth == max_depth:
         return scores
+
     return max(scores) / 2
 
+
 def move_stockfish():
-    scores = stockfish(3, 1)
+    n = 3
+    p = 1
+
+    scores = stockfish(n, n, p)
     print(scores)
     c, m = 0, scores[0]
     for i in range(1, 7):
@@ -132,6 +140,7 @@ def move_stockfish():
             c, m = i, scores[i]
 
     return c
+
 
 def move_random():
     pos = []
@@ -157,16 +166,19 @@ while(True):
         clean()
 
     pboard()
+    print("--")
 
     #print("seq player 2")
     # print(find_seq(2))
 
     # we play
     move = strat()
+    play(move, 1)
+    clean()
+
     if is_win(1):
         print("Gagne")
         break
-    print(play(move, 1))
-    clean()
-
+    
     pboard()
+    print("--")
