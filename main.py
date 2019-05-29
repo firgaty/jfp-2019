@@ -1,3 +1,4 @@
+# top line is 0
 board = [[0] * 7 for _ in range(7)]
 
 # 0 == nothing
@@ -8,3 +9,18 @@ def play(p, c):
             assert (i != 0)
             board[i - 1][c] = p
 
+def cp_move():
+    return 0
+
+while(True):
+
+    move = int(input())
+
+    if move < 0:
+        play(3, 1)
+        continue
+
+    play(move, 2)
+    play(cp_move, 1)
+
+    print()
