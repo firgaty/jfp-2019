@@ -43,13 +43,15 @@ def play(c, p):
 # find adjacent seq
 def find_seq_aux(p, dx, dy):
     seqs = []
-    for i in range(7):
+    for i in range(base, base + L):
         for j in range(7):
             s = []
             for k in range(4):
                 x = j + k * dx
                 y = i + k * dy
-                if x < 7 and y < 7 and board[y][x] == p:
+                if (x < base + 7 and x >= base
+                    and y < base + 7 and y >= base
+                    and board[y][x] == p):
                     s.append((x, y))
                 else:
                     break
@@ -67,25 +69,38 @@ def find_seq(p):
 
 # STRATS
 
-# 1  me
+# sum length of sequences
+def eval_score(p):
+    return sum(map(lambda x: len(x), find_seq(p)))
+
 # -1 opp
 def stockfish(depth, p):
-    scores = [0] * 7
+    global base
+    s = eval_score(depth % 2 + 1)
+    scores = [s] * 7
     
     if depth == 0:
-        # calcul
-        return scores
+        return s
 
     for c in range(7):
-        i = play(p + 1, c)
+        if board[base + L - 1][c] != 0:
+            continue
+        
+        i = play(c, 1 if p == 1 else 2)
+        cleaned = clean()
         # test is win
-        scores[c] = stockfish(p * (-1))
+        scores[c] = stockfish(depth - 1, p * (-1))
         board[i][c] = 0
+        if cleaned:
+            base -= 1
 
+    if depth == 3:
+        return scores
     return max(scores) / 2
 
 def move_stockfish():
-    scores = stockfish(10)
+    scores = stockfish(3, 1)
+    print(scores)
     c, m = 0, scores[0]
     for i in range(1, 7):
         if scores[i] > m:
@@ -101,7 +116,7 @@ def move_random():
     return random.choice(pos)
 
 # CHANGE STRAT
-strat = move_random
+strat = move_stockfish
 
 # main loop
 while(True):
