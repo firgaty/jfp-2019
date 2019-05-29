@@ -114,7 +114,11 @@ def move_stockfish():
     return c
 
 def move_random():
-    return random.randint(0, 6)
+    pos = []
+    for i in range(C):
+        if board[base + L - 1][i] == 0:
+            pos.append(i)
+    return random.choice(pos)
 
 # CHANGE STRAT
 strat = move_random
