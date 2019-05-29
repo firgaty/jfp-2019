@@ -21,6 +21,8 @@ while(True):
         continue
 
     play(move, 2)
-    play(cp_move, 1)
 
-    print()
+    move = cp_move()
+    play(move, 1)
+
+    print(move)
