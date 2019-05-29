@@ -3,6 +3,14 @@ import random
 # top line is 0
 board = [[0] * 7 for _ in range(7)]
 
+# debug
+def pboard():
+    for i in range(7):
+        for j in range(7):
+            print(board[i][j], end=' ')
+        print()
+
+# clean line if full
 def is_tetris():
     for e in board[6]:
         if e == 0:
@@ -25,6 +33,7 @@ def play(c, p):
 
     board[6][c] = p
 
+# find adjacent seq
 def find_seq_aux(p, dx, dy):
     seqs = []
     for i in range(7):
@@ -49,16 +58,15 @@ def find_seq(p):
     seqs.sort(key=lambda x: len(x))
     return seqs
 
-def cp_move():
+# STRATS
+
+def move_random():
     return random.randint(0, 6)
 
-def pboard():
-    for i in range(7):
-        for j in range(7):
-            print(board[i][j], end=' ')
-        print()
+# CHANGE STRAT
+strat = move_random
 
-
+# main loop
 while(True):
 
     # opponent play
@@ -74,7 +82,7 @@ while(True):
     print(find_seq(2))
         
     # we play
-    move = cp_move()
+    move = strat()
     play(move, 1)
     clean()
 
