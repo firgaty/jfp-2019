@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import random
 
 # top line is 0
@@ -115,7 +117,7 @@ def stockfish(max_depth, depth, p):
         i = play(c, 1 if p == 1 else 2)
         cleaned = clean()
         if is_win(depth % 2 + 1):
-            scores[c] = 1000
+            scores[c] = 100000000000 * p
         else:
             scores[c] = stockfish(max_depth, depth - 1, p * (-1))
         board[i][c] = 0
@@ -129,11 +131,11 @@ def stockfish(max_depth, depth, p):
 
 
 def move_stockfish():
-    n = 3
+    n = 4
     p = 1
 
     scores = stockfish(n, n, p)
-    print(scores)
+    #print(scores)
     c, m = 0, scores[0]
     for i in range(1, 7):
         if scores[i] > m:
